@@ -1,0 +1,154 @@
+#include <iostream>
+#include <conio.h>
+#include <string.h>
+#include <stdio.h>
+#include <iomanip>
+using namespace std;
+struct regamigo
+{
+	char nombre[30];
+	int edad;
+	char email[60];
+	char estado;
+};
+void adicionar()
+{
+	FILE * ptr;
+	regamigo reg;
+	cout<<"introducir nombre: ";
+	do
+	{
+		gets(reg.nombre);
+	}while(strlen(reg.nombre)==0);
+	cout<<"introducir edad: ";
+	cin>>reg.edad;
+	cout<<"introducir email: ";
+	do
+	{
+		gets(reg.email);
+	}while(strlen(reg.email)==0);
+	reg.estado='N';
+	ptr=fopen("amigos.dat","ab");
+	fwrite(&reg,sizeof(reg),1,ptr);
+	fclose(ptr);
+}
+void mostrarArchivo()
+{
+	FILE * ptr;
+	regamigo reg;
+
+	ptr=fopen("amigos.dat","rb");
+	if (ptr!=NULL)
+	{
+		fread(&reg,sizeof(reg),1,ptr);
+		cout<<setw(40)<<"_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ "<<endl;
+		cout<<setw(50)<<"Nombre    Edad     Email              "<<endl;
+		cout<<setw(40)<<"_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _"<<endl;
+		while(feof(ptr)==false)
+		{
+			cout<<setw(20)<<reg.nombre<<setw(4)<<reg.edad<<setw(25)<<reg.email<<endl;
+			fread(&reg,sizeof(reg),1,ptr);
+		}
+		fclose(ptr);
+	}
+	else
+	{
+		cout<<"no existe el archivo";
+	}
+}
+void edadprom()
+{
+	
+	FILE * ptr;
+	regamigo reg;
+	int s=0,c=0;
+	ptr=fopen("amigos.dat","rb");
+	if (ptr!=NULL)
+	{
+		fread(&reg,sizeof(reg),1,ptr);
+		while(feof(ptr)==false)
+		{
+			s=s+reg.edad;
+			c++;
+			fread(&reg,sizeof(reg),1,ptr);
+		}
+		fclose(ptr);
+		if(c!=0)
+		{
+			cout<<endl<<"el promedio de edad es: "<<s/c<<endl;
+		}
+	}
+	else
+	{
+		cout<<"no existe el archivo";
+	}
+}
+void edadMayorMenor()
+{
+	
+	FILE * ptr;
+	regamigo reg;
+	int mayor=0,menor=150;
+	char nomMay[20], nomMenor[20];
+	ptr=fopen("amigos.dat","rb");
+	if (ptr!=NULL)
+	{
+		fread(&reg,sizeof(reg),1,ptr);
+		while(feof(ptr)==false)
+		{
+			if(reg.edad>mayor)
+			{
+				mayor=reg.edad;
+				strcpy(nomMay,reg.nombre);
+			}
+			if(reg.edad<menor)
+			{
+				menor=reg.edad;
+				strcpy(nomMenor,reg.nombre);
+			}
+			if(reg.edad==menor)
+			{
+				menor=reg.edad;
+				strcat(nomMenor,reg.nombre);
+			}
+			fread(&reg,sizeof(reg),1,ptr);
+		}
+		fclose(ptr);
+		if(mayor!=0)
+		{
+			cout<<endl<<"la edad mayor es: "<<mayor<<" pertenece a: "<<nomMay<<endl;
+			cout<<endl<<"la edad menor es: "<<menor<<" pertenece a: "<<nomMenor<<endl;
+		}
+	}
+	else
+	{
+		cout<<"no existe el archivo";
+	}
+}
+void main()
+{
+	int op;
+	do
+	{
+		cout<<endl<<"******** MENU **********";
+		cout<<endl<<"1.Adicionar al archivo";
+		cout<<endl<<"2.Mostrar todo el archivo";
+		cout<<endl<<"3.Mostrar el promedio de edades";
+		cout<<endl<<"4.Mostrar la edad mayor y menor";
+		cout<<endl<<"0. salir";
+		cout<<endl<<"introducir opcion: ";
+		cin>>op;
+		switch(op)
+		{
+			case 1:adicionar();
+				break;
+			case 2:mostrarArchivo();
+				break;
+			case 3:edadprom();
+				break;
+			case 4:edadMayorMenor();
+				break;
+		}
+	}while(op>0);
+	getch();
+}
